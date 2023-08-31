@@ -1,0 +1,48 @@
+.Playground .outer-container {
+  // border: 4px rgba(29, 29, 27, .15) solid;
+  border-radius: 12px 48px 48px 48px;
+  display: flex;
+  width: 700px;
+  // height: 300px;
+  margin: 200px auto;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  box-shadow: -6px 8px 11px 0px #1a1a1a29;
+  display: flex;
+  flex-direction: column;
+  .question-count {
+    margin: 0 1rem;
+    font-size: 80%;
+  }
+  .question-header {
+    border-bottom: 3px solid rgb(0 0 0 / 6%);
+    margin: 1rem;
+    display: flex;
+    .question-header-question {
+      word-break: break-word;
+      font-size: 160%;
+    }
+  }
+  .question-options {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem 1rem;
+    margin: 1rem;
+    padding: 0;
+  }
+  .question-footer {
+    margin: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    .button {
+      width: 100%;
+    }
+  }
+}
