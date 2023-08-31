@@ -140,7 +140,7 @@ function Playground() {
 
 export default Playground
 
-//Step 6: Create a new Setup component
+//Step 6: Create a new Setup component that lets a user choose: Genre, difficulty, and amount of questions
 
 //Step ?: Add score.
 //Step ? :Add try catch for when API request is unsuccessful
