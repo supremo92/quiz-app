@@ -4,7 +4,7 @@ import incorrect from './assets/remove.png'
 
 interface OptionProps {
     isDisabled: boolean
-    key: string
+    // key: number
     label: string
     clickEvent: () => void
     isSelected: boolean
@@ -16,7 +16,7 @@ interface OptionProps {
 
 function Options(props: OptionProps) {
     return (
-        <button disabled={props.isDisabled} className={`question-option ${props.isSelected ? "selected" : "not-selected"} ${props.isCorrect ? "correct" : "incorrect"} ${props.highlight != null ? props.highlight ? "selected-correct" : "selected-incorrect" : ""}`} key={props.key} data-key={props.key} data-iscorrect={props.isCorrect ? "correct" : "incorrect"} onClick={props.clickEvent}>
+        <button disabled={props.isDisabled} className={`question-option ${props.isSelected ? "selected" : "not-selected"} ${props.isCorrect ? "correct" : "incorrect"} ${props.highlight != null ? props.highlight ? "selected-correct" : "selected-incorrect" : ""}`} data-iscorrect={props.isCorrect ? "correct" : "incorrect"} onClick={props.clickEvent}>
             {
                 props.highlight != null ? (props.highlight ?
                     <img src={correct}></img> :

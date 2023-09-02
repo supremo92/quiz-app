@@ -1,10 +1,11 @@
+.Playground {
+  border: 6px solid #ff0000;
+  width: 100%;
+}
 .Playground .outer-container {
-  // border: 4px rgba(29, 29, 27, .15) solid;
   border-radius: 12px 48px 48px 48px;
-  display: flex;
   width: 700px;
-  // height: 300px;
-  margin: 200px auto;
+  margin: 0 auto;
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(5px);

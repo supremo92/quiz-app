@@ -17,7 +17,7 @@ interface Question {
 
 
 // const URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=medium&type=multiple'
-const URL = 'https://opentdb.com/api.php?amount=10&category=10&difficulty=easy&type=multiple'
+const URL = 'https://opentdb.com/api.php?amount=10'
 //Options for URL: amount, category, difficulty, type, encode 
 //this url will have to be customised later for users to select their options. We'll leave it as above first.
 
@@ -38,18 +38,18 @@ function Playground() {
     // const [calculatedHighlightColour, setCalculatedHighlightColour] = useState<boolean | null>(null)
 
 
-    const handleSelection = (key: string) => {
-        setSelectedOption(key)
+    const handleOptionSelection = (selectedOptionText: string) => {
+        setSelectedOption(selectedOptionText)
         setIsSubmitDisabled(false)
     }
 
-    const handleSubmit = (selectedOption: string) => {
+    const handleSubmit = (submittedOptionText: string) => {
         setAreOptionsDisabled(true)
 
         setIsSubmitDisabled(true)
         setIsNextDisabled(false)
 
-        if (selectedOption == decode(questions[currentQuestion].correct_answer)) {
+        if (submittedOptionText === decode(questions[currentQuestion].correct_answer)) {
             console.log("Correct")
             //simply highlight the correct option
 
@@ -114,19 +114,19 @@ function Playground() {
                 </div>
 
                 <ul className="question-options">
-                    {questions.length ? shuffledOptions.map((ans) =>
+                    {questions.length && shuffledOptions.map((ans, key) =>
 
                         <Option
                             isDisabled={areOptionsDisabled}
-                            key={decode(ans)}
+                            key={key}
                             label={decode(ans)}
-                            clickEvent={() => handleSelection(decode(ans))}
-                            isSelected={selectedOption == decode(ans) ? true : false}
-                            isCorrect={decode(ans) == decode(questions[currentQuestion].correct_answer) ? true : false}
-                            highlight={highlightNow ? (decode(ans) == decode(questions[currentQuestion].correct_answer) ? true : selectedOption == decode(ans) ? false : null) : null}
+                            clickEvent={() => handleOptionSelection(decode(ans))}
+                            isSelected={selectedOption === decode(ans) ? true : false}
+                            isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false}
+                            highlight={highlightNow ? (decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : selectedOption === decode(ans) ? false : null) : null}
                         />
 
-                    ) : null}
+                    )}
                 </ul>
 
                 <div className="question-footer">
@@ -141,6 +141,13 @@ function Playground() {
 export default Playground
 
 //Step 6: Create a new Setup component that lets a user choose: Genre, difficulty, and amount of questions
+
+
+
+//Improvments:
+//Reduce the number of decode calls. decode once, and store the results as variables.
+//Use Destructuring: Destructure the questions array and the current question object to avoid repetitive usage of questions[currentQuestion].
+//Conditional Rendering: Instead of using ternary conditions inside the JSX, consider using short-circuit evaluation for better readability.
 
 //Step ?: Add score.
 //Step ? :Add try catch for when API request is unsuccessful

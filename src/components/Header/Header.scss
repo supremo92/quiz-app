@@ -1,7 +1,9 @@
-.Header .outer-container{
-    background-color: black;
-    height: 50px;
-    width:100%;
-    color: white;
-    position: absolute;
+.Header .outer-container {
+  background-color: rgba(0, 0, 0, 0.295);
+  height: 50px;
+  width: 100%;
+  color: white;
+  position: relative;
+
+  // border: 3px solid rgb(29, 231, 29);
 }
