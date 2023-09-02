@@ -1,5 +1,4 @@
 .Playground {
-  border: 6px solid #ff0000;
   width: 100%;
 }
 .Playground .outer-container {
@@ -12,19 +11,24 @@
   box-shadow: -6px 8px 11px 0px #1a1a1a29;
   display: flex;
   flex-direction: column;
+
   .question-count {
     margin: 0 1rem;
     font-size: 80%;
   }
+  
   .question-header {
     border-bottom: 3px solid rgb(0 0 0 / 6%);
     margin: 1rem;
     display: flex;
+
     .question-header-question {
       word-break: break-word;
       font-size: 160%;
     }
+
   }
+
   .question-options {
     display: grid;
     grid-auto-columns: 1fr;
@@ -35,6 +39,7 @@
     margin: 1rem;
     padding: 0;
   }
+
   .question-footer {
     margin: 1rem;
     display: flex;
@@ -42,8 +47,10 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
+
     .button {
       width: 100%;
     }
+
   }
 }

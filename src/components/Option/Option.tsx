@@ -1,26 +1,41 @@
 import "./Option.scss"
-import correct from './assets/check.png'
-import incorrect from './assets/remove.png'
+import correctIcon from '@assets/check.png'
+import incorrectIcon from '@assets/remove.png'
 
 interface OptionProps {
     isDisabled: boolean
-    // key: number
     label: string
-    clickEvent: () => void
     isSelected: boolean
     isCorrect: boolean
-
-    highlight: boolean | null
-
+    highlight: boolean
+    clickEvent: () => void
 }
 
 function Options(props: OptionProps) {
+
+    let highlight = ""
+
+    const isSelected = props.isSelected ? "selected" : "not-selected"
+    const isCorrect = props.isCorrect ? "correct" : "incorrect"
+
+    const showIncorrect = props.highlight && props.isSelected && !props.isCorrect
+    const showCorrect = props.highlight && props.isCorrect
+
+    if (props.highlight && (props.isSelected || props.isCorrect)) {
+        highlight = props.isCorrect ? "selected-correct" : "selected-incorrect"
+    }
+
     return (
-        <button disabled={props.isDisabled} className={`question-option ${props.isSelected ? "selected" : "not-selected"} ${props.isCorrect ? "correct" : "incorrect"} ${props.highlight != null ? props.highlight ? "selected-correct" : "selected-incorrect" : ""}`} data-iscorrect={props.isCorrect ? "correct" : "incorrect"} onClick={props.clickEvent}>
+        <button
+            disabled={props.isDisabled}
+            className={`question-option ${isSelected} ${isCorrect} ${highlight}`}
+            onClick={props.clickEvent}
+        >
             {
-                props.highlight != null ? (props.highlight ?
-                    <img src={correct}></img> :
-                    <img src={incorrect}></img>) : null
+                showCorrect && <img src={correctIcon} />
+            }
+            {
+                showIncorrect && <img src={incorrectIcon} />
             }
             {props.label}
         </button>
@@ -28,4 +43,3 @@ function Options(props: OptionProps) {
 }
 
 export default Options
-// setIsSelected(prev => !prev); //use this to toggle the state.

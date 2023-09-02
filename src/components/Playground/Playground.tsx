@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
 import "./Playground.scss"
-import Button from "../Button/Button"
 import { decode } from "html-entities"
+import { useEffect, useState } from "react"
+import Button from "../Button/Button"
 import Option from "../Option/Option.tsx"
 
 interface Question {
@@ -13,10 +13,6 @@ interface Question {
     incorrect_answers: string[]
 }
 
-
-
-
-// const URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=medium&type=multiple'
 const URL = 'https://opentdb.com/api.php?amount=10'
 //Options for URL: amount, category, difficulty, type, encode 
 //this url will have to be customised later for users to select their options. We'll leave it as above first.
@@ -26,17 +22,12 @@ function Playground() {
     const [questions, setQuestions] = useState<Question[]>([])
     const [shuffledOptions, setShuffledOptions] = useState<string[]>([])
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
+    const [currentQuestionText, setCurrentQuestionText] = useState<string>("Loading...")
     const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true)
     const [isNextDisabled, setIsNextDisabled] = useState<boolean>(true)
     const [selectedOption, setSelectedOption] = useState<string | null>(null)
     const [areOptionsDisabled, setAreOptionsDisabled] = useState<boolean>(false)
-
-    // const [questionWasCorrect, setQuestionWasCorrect] = useState<boolean | null>(null)
-
     const [highlightNow, setHighlightNow] = useState<boolean>(false)
-
-    // const [calculatedHighlightColour, setCalculatedHighlightColour] = useState<boolean | null>(null)
-
 
     const handleOptionSelection = (selectedOptionText: string) => {
         setSelectedOption(selectedOptionText)
@@ -45,20 +36,17 @@ function Playground() {
 
     const handleSubmit = (submittedOptionText: string) => {
         setAreOptionsDisabled(true)
-
         setIsSubmitDisabled(true)
         setIsNextDisabled(false)
 
         if (submittedOptionText === decode(questions[currentQuestion].correct_answer)) {
             console.log("Correct")
-            //simply highlight the correct option
-
-        }
-        else {
+            // Add to a score counter
+        } else {
             console.log(`Incorrect: Correct answer is ${decode(questions[currentQuestion].correct_answer)}`)
-
-
+            // Fight the person
         }
+
         setHighlightNow(true)
     }
 
@@ -66,56 +54,60 @@ function Playground() {
         setSelectedOption(null)
         setHighlightNow(false)
         setAreOptionsDisabled(false)
-        // console.log("manage movement through questons")
         if (currentQuestion < 9) {
             setCurrentQuestion(currentQuestion + 1)
             setIsNextDisabled(true)
-        }
-        else {
+        } else {
             setIsNextDisabled(true)
             alert("end")
+            // Display Score!
         }
     }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const resp = await fetch(URL)
-                const dataFromApi = await resp.json()
-
+                const res = await fetch(URL)
+                const dataFromApi = await res.json()
                 setQuestions(dataFromApi.results)
-            }
-            catch (err) {
+            } catch (err) {
                 console.log(err)
+                // This could redirect to an error page, or even an error component.
             }
         }
         fetchData()
     }, [])
 
+    // We have has to use mutliple useEffects because
+    //  we want the above fetchData to run only on component mounting, 
+    //  while the below, shufflling the options for the current question,
+    //  needs to re-render whenever currentQuestion or questions updates.
     useEffect(() => {
-        //We have has to use mutliple useStates because we want the above fetchData to run only on component mounting, while the below, shufflling the options for the current question, needs to re-render whenever currentQuestion or questions updates.
-        const options = [...(questions.length ? questions[currentQuestion].incorrect_answers : []), (questions.length ? questions[currentQuestion].correct_answer : "")];
-        for (let i = options.length - 1; i > 0; i--) {
-            // decode(options[i])
-            const j = Math.floor(Math.random() * (i + 1));
-            [options[i], options[j]] = [options[j], options[i]];
+        if (questions.length === 0) return
 
-        }
+        setCurrentQuestionText(decode(questions[currentQuestion].question))
 
-        setShuffledOptions(options);
+        const options = [
+            ...questions[currentQuestion].incorrect_answers,
+            questions[currentQuestion].correct_answer
+        ]
+
+        options.sort(() => Math.random() - 0.5)
+
+        setShuffledOptions(options)
     }, [currentQuestion, questions])
 
     return (
         <div className="Playground">
             <div className="outer-container">
-                <div className="question-count">Question {currentQuestion + 1} of {questions.length}</div>
-                <div className="question-header">
-                    {questions.length ? (<div className="question-header-question">{decode(questions[currentQuestion].question)}</div>) : (<div>Loading...</div>)}
+                <div className="question-count">
+                    Question {currentQuestion + 1} of {questions.length}
                 </div>
-
+                <div className="question-header">
+                    <div className="question-header-question">{currentQuestionText}</div>
+                </div>
                 <ul className="question-options">
-                    {questions.length && shuffledOptions.map((ans, key) =>
-
+                    {shuffledOptions.map((ans, key) =>
                         <Option
                             isDisabled={areOptionsDisabled}
                             key={key}
@@ -123,15 +115,21 @@ function Playground() {
                             clickEvent={() => handleOptionSelection(decode(ans))}
                             isSelected={selectedOption === decode(ans) ? true : false}
                             isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false}
-                            highlight={highlightNow ? (decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : selectedOption === decode(ans) ? false : null) : null}
+                            highlight={highlightNow}
                         />
-
                     )}
                 </ul>
-
                 <div className="question-footer">
-                    <Button label="Submit" isDisabled={isSubmitDisabled} doClick={() => { handleSubmit(selectedOption ? selectedOption : "none") }} />
-                    <Button label="Next" isDisabled={isNextDisabled} doClick={handleNext} />
+                    <Button
+                        label="Submit"
+                        isDisabled={isSubmitDisabled}
+                        doClick={() => { handleSubmit(selectedOption ? selectedOption : "none") }}
+                    />
+                    <Button
+                        label="Next"
+                        isDisabled={isNextDisabled}
+                        doClick={handleNext}
+                    />
                 </div>
             </div>
         </div>
