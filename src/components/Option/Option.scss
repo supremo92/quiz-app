@@ -1,5 +1,4 @@
 .question-option {
-  //   border: 1px solid red;
   box-shadow: 3px 3px 8px 0px #0000004f;
   background-color: #857ed4;
   list-style-type: none;
@@ -19,23 +18,27 @@
     left: 2%;
   }
 }
+
 .question-option.selected {
   outline: 3px solid #d44cf7;
   background-color: #3dacb5;
-
   cursor: pointer;
 }
+
 .question-option.not-selected:hover:not([disabled]) {
   background-color: #3dacb5;
   cursor: pointer;
 }
+
 .question-option:disabled {
   background-color: rgba(133, 126, 212, 0.5);
   color: unset;
 }
+
 .question-option.selected-incorrect {
   background-color: #f44336 !important;
 }
+
 .question-option.selected-correct {
   background-color: #00ba00 !important;
 }

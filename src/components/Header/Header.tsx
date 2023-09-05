@@ -2,10 +2,8 @@ import "./Header.scss"
 function Header() {
 
     return (
-        <div className="Header">
-            <div className="outer-container">
-                Header
-            </div>
+        <div className="header-outer-container">
+            Header
         </div>
     )
 }
