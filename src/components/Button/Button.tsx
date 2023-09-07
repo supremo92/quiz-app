@@ -2,8 +2,11 @@ import "./Button.scss"
 
 interface ButtonProps {
     isDisabled: boolean
+    class?: string
+    id?: string
     label: string
-    doClick: () => void
+    doClick?: () => void
+
 }
 
 function Button(props: ButtonProps) {
@@ -11,7 +14,8 @@ function Button(props: ButtonProps) {
     return (
         <button
             disabled={props.isDisabled}
-            className={`button ${props.isDisabled ? "inactive" : "active"}`}
+            id={props.id}
+            className={`button ${props.isDisabled ? "inactive" : "active"} ${props.class}`}
             onClick={props.doClick}
         >
             {props.label}

@@ -3,7 +3,7 @@ function Header() {
 
     return (
         <div className="header-outer-container">
-            Header
+            To-Ri-Va
         </div>
     )
 }

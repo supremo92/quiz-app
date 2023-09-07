@@ -3,6 +3,7 @@ import { decode } from "html-entities"
 import "./Playground.scss"
 import Button from "../Button/Button"
 import Option from "../Option/Option.tsx"
+import NoQuestionsScreen from "../NoQuestionsScreen/NoQuestionsScreen.tsx"
 
 interface Question {
     category: string
@@ -13,14 +14,19 @@ interface Question {
     incorrect_answers: string[]
 }
 
+interface playgroundProps {
+    settingsUrl: string
+}
 
-const URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=medium&type=multiple'
+// const URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=medium&type=multiple'
 // const URL = 'https://opentdb.com/api.php?amount=10'
 //Options for URL: amount, category, difficulty, type, encode 
 //this url will have to be customised later for users to select their options. We'll leave it as above first.
 
-function Playground() {
+function Playground(props: playgroundProps) {
+    const URL = props.settingsUrl && `https://opentdb.com/api.php?${props.settingsUrl}`
     const [questions, setQuestions] = useState<Question[]>([])
+    const [responseCode, setResponseCode] = useState<number>()
     const [shuffledOptions, setShuffledOptions] = useState<string[]>([])
     const [currentQuestion, setCurrentQuestion] = useState<number>(0)
     const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true)
@@ -56,16 +62,18 @@ function Playground() {
             setIsNextDisabled(true)
         } else {
             setIsNextDisabled(true)
-            alert("end")
+
+            alert("Add in ending screen here")
         }
     }
 
     useEffect(() => {
+        console.log("useEffect")
         const fetchData = async () => {
             try {
                 const resp = await fetch(URL)
                 const dataFromApi = await resp.json()
-
+                setResponseCode(dataFromApi.response_code)
                 setQuestions(dataFromApi.results)
             }
             catch (err) {
@@ -73,7 +81,7 @@ function Playground() {
             }
         }
         fetchData()
-    }, [])
+    }, [URL])
 
     useEffect(() => {
         //We have has to use mutliple useStates because
@@ -97,8 +105,9 @@ function Playground() {
                 <div className="question-header">
                     <div className="question-header-question">{currentQuestionText}</div>
                 </div>
-
+                {responseCode === 1 && <NoQuestionsScreen />}
                 <ul className="question-options">
+
                     {shuffledOptions.map((ans, key) =>
                         <Option
                             isDisabled={areOptionsDisabled}
@@ -124,6 +133,8 @@ function Playground() {
                         doClick={handleNext}
                     />
                 </div>
+
+
             </div>
         </div>
     )
@@ -148,3 +159,6 @@ export default Playground
 //Step 3: When an option is selected, enable the Submit button. Then when the Submit button is selected, we start the resolution if the question.
 //Step 4: When an answer is submitted: if the user is correct, the clicked options becomes green. If the user is incorrect, the correct answer will be highlighted as green, and the clicked incorrect  options will be red.
 //Step 5: Add icons to the options when question is submitted
+
+
+//Bugs - Correct Tick covers text
