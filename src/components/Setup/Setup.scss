@@ -3,6 +3,9 @@
   background-color: rgba(0, 0, 0, 0.178);
   padding: 1rem;
   height: 100%;
+  .setup-form-section {
+    margin: 1rem;
+  }
 
   .outer-container {
     border-radius: 48px;
@@ -22,11 +25,15 @@
       margin: 1rem;
     }
     > div:first-of-type {
+      // flex: 0.5;
       margin: 0;
       animation: colourRotate 10s infinite linear;
       background-size: cover;
       background-repeat: no-repeat;
       background-position: left;
+    }
+    h2 {
+      text-align: center;
     }
     @keyframes colourRotate {
       from {

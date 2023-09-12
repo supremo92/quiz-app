@@ -3,6 +3,7 @@ import "./Setup.scss"
 import Button from "../Button/Button"
 // import setupImageMini from "@/assets/rainbow-mini-min.png"
 import setupImage from "@/assets/rainbow.jpg"
+import logo from "@/assets/toriva.png"
 
 interface Category {
     id: number
@@ -76,6 +77,9 @@ function Setup(props: onSubmitFunc) {
                 </div>
                 <div>
                     <form className="form-container" onSubmit={handleSubmit}>
+                        <img src={logo} style={
+                            { margin: '0 auto 1rem auto' }
+                        }></img>
                         <h2>Set up the session</h2>
                         <div className="form-options">
                             <div className="setup-form-section">
