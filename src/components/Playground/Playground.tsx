@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import { decode } from "html-entities"
 import "./Playground.scss"
-import Button from "../Button/Button"
-import Option from "../Option/Option.tsx"
-import NoQuestionsScreen from "../NoQuestionsScreen/NoQuestionsScreen.tsx"
+import { decode } from "html-entities"
+import { useEffect, useState } from "react"
+import Button from "@components/Button/Button"
+import NoQuestionsScreen from "@components/NoQuestionsScreen"
+import Option from "@components/Option"
 
 interface Question {
     category: string
