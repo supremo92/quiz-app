@@ -23,6 +23,8 @@
     /*Alias - Must also configure vite.config.ts*/
     "paths": {
       "@/*": ["./src/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"]
     }
   },

@@ -1,6 +1,6 @@
-import "@components/Option/Option.scss"
-import correctIcon from '@components/Option/assets/check.png'
-import incorrectIcon from '@components/Option/assets/remove.png'
+import "./Option.scss"
+import correctIcon from './assets/check.png'
+import incorrectIcon from './assets/remove.png'
 
 interface OptionProps {
     isDisabled: boolean

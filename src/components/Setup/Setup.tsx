@@ -1,20 +1,13 @@
-import { useEffect, useState, } from "react"
 import "./Setup.scss"
-import Button from "../Button/Button"
-// import setupImageMini from "@/assets/rainbow-mini-min.png"
-import setupImage from "@/assets/rainbow.jpg"
-import logo from "@/assets/toriva.png"
+import { useEffect, useState, } from "react"
+import Button from "@components/Button"
+import logo from "@assets/toriva.png"
+import setupImage from "@assets/rainbow.jpg"
 
 interface Category {
     id: number
     name: string
 }
-// interface FormData {
-//     category: number
-//     difficulty: string
-//     type: string
-//     amount: number
-// }
 interface onSubmitFunc {
     onFormDataSubmit: (formURL: string) => void
 }
