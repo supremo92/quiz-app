@@ -1,63 +1,56 @@
 import "./Setup.scss"
-import { useEffect, useState, } from "react"
+import { useEffect, useState } from "react"
 import Button from "@components/Button"
 import logo from "@assets/toriva.png"
 import setupImage from "@assets/rainbow.jpg"
+import { useNavigate } from "react-router-dom"
 
-interface Category {
-    id: number
-    name: string
-}
-interface onSubmitFunc {
-    onFormDataSubmit: (formURL: string) => void
-}
-
-function Setup(props: onSubmitFunc) {
-    const [quizCategories, setQuizCategories] = useState<Category[]>([{ id: 0, name: 'Loading...' }])
-    const [triviaCategory, setTriviaCategory] = useState<string>("9")
-    const [triviaDifficulty, setTriviaDifficulty] = useState<string>("")
-    const [triviaType, setTriviaType] = useState<string>("")
-    const [triviaAmount, setTriviaAmount] = useState<string>("10")
+function Setup() {
+    const navigate = useNavigate()
+    const grabbedQuizSettings = JSON.parse(localStorage.getItem("quizSettings") ?? '{}')
+    const [quizCategories, setQuizCategories] = useState([{ id: 0, name: 'Loading...' }])
+    const [triviaCategory, setTriviaCategory] = useState(grabbedQuizSettings.category ?? 9)
+    const [triviaDifficulty, setTriviaDifficulty] = useState(grabbedQuizSettings.difficulty ?? "easy")
+    const [triviaType, setTriviaType] = useState(grabbedQuizSettings.type ?? "any")
+    const [triviaAmount, setTriviaAmount] = useState(grabbedQuizSettings.amount ?? 10)
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        props.onFormDataSubmit(
-            `amount=${triviaAmount}&category=${triviaCategory}${triviaDifficulty}${triviaType}`
-        )
-    }
-    const handleTriviaCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setTriviaCategory(event.target.value)
-    }
-    const handleTriviaDifficultyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const diffcultySlug = event.target.value !== "any" ? `&difficulty=${event.target.value}` : ""
-        setTriviaDifficulty(diffcultySlug)
-    }
-    const handleTriviaTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const typeSlug = event.target.value !== "any" ? `&type=${event.target.value}` : ""
-        setTriviaType(typeSlug)
-    }
-    const handleTriviaAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTriviaAmount(event.target.value)
+
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}&category=${triviaCategory}&difficulty=${triviaDifficulty}&type=${triviaType}`)
+                const dataFromApi = await res.json()
+                if (dataFromApi.response_code === 1) {
+                    alert("There are not enough questions of the selected criteria.")
+                } else {
+                    const quizSettings = {
+                        amount: triviaAmount,
+                        category: triviaCategory,
+                        difficulty: triviaDifficulty,
+                        type: triviaType
+                    }
+                    localStorage.setItem('quizSettings', JSON.stringify(quizSettings))
+                    localStorage.setItem('quizSettingsString', `amount=${triviaAmount}&category=${triviaCategory}&difficulty=${triviaDifficulty}&type=${triviaType}`)
+                    navigate("/Home")
+                }
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
     }
 
     useEffect(() => {
-        const fetchQuizCategories = () => {
-            fetch("https://opentdb.com/api_category.php")
-                .then((resp) => {
-                    if (!resp.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return resp.json();
-                })
-                .then((data) => {
-                    setQuizCategories(data.trivia_categories)
-                })
-                .catch((error) => {
-                    console.error('Fetch error:', error);
-                });
-        };
-        fetchQuizCategories();
-    }, []);
+        const fetchQuizCategories = async () => {
+            const res = await fetch("https://opentdb.com/api_category.php")
+            if (!res.ok) throw new Error('Network response was not ok')
+            const data = await res.json()
+            setQuizCategories(data.trivia_categories)
+        }
+        fetchQuizCategories()
+    }, [])
 
 
     return (
@@ -81,9 +74,9 @@ function Setup(props: onSubmitFunc) {
                                     name="trivia_category"
                                     id="trivia_category"
                                     className="form-control"
-                                    onChange={handleTriviaCategoryChange}
+                                    onChange={(event) => setTriviaCategory(parseInt(event.target.value))}
                                 >
-                                    {quizCategories.map((category, index) => <option key={index} value={category.id}>{category.name}</option>)}
+                                    {quizCategories.map((category, index) => <option key={index} value={category.id} selected={triviaCategory === category.id}>{category.name}</option>)}
                                 </select>
                             </div>
                             <div className="setup-form-section">
@@ -91,7 +84,8 @@ function Setup(props: onSubmitFunc) {
                                 <select
                                     name="trivia_difficulty"
                                     className="form-control"
-                                    onChange={handleTriviaDifficultyChange}
+                                    onChange={(event) => setTriviaDifficulty(event.target.value)}
+                                    defaultValue={triviaDifficulty}
                                 >
                                     <option value="any">Any Difficulty</option>
                                     <option value="easy">Easy</option>
@@ -104,11 +98,12 @@ function Setup(props: onSubmitFunc) {
                                 <select
                                     name="trivia_type"
                                     className="form-control"
-                                    onChange={handleTriviaTypeChange}
+                                    onChange={(event) => setTriviaType(event.target.value)}
+                                    defaultValue={triviaType}
                                 >
-                                    <option value="any">Any Type</option>
+                                    <option value="any" >Any Type</option>
                                     <option value="multiple">Multiple Choice</option>
-                                    <option value="boolean">True / False</option>
+                                    <option value="boolean" >True / False</option>
                                 </select>
                             </div>
                             <div className="setup-form-section">
@@ -121,7 +116,7 @@ function Setup(props: onSubmitFunc) {
                                     min="1"
                                     max="50"
                                     value={triviaAmount}
-                                    onChange={handleTriviaAmountChange}
+                                    onChange={(event) => setTriviaAmount(parseInt(event.target.value))}
                                 ></input>
                             </div>
                         </div>

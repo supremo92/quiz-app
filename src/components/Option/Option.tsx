@@ -16,7 +16,6 @@ function Options(props: OptionProps) {
     /*Moved logic out of the JSX*/
     let highlight = ""
     const isSelected = props.isSelected ? "selected" : "not-selected"
-    const isCorrect = props.isCorrect ? "correct" : "incorrect"
 
     //we only want to highlight incorrect when 1) it's time to highlight. 2) and the options is selected. 3) And the option is NOT correct.
     const highlightIncorrect = props.highlightTime && props.isSelected && !props.isCorrect
@@ -31,8 +30,8 @@ function Options(props: OptionProps) {
     return (
         <button
             disabled={props.isDisabled}
-            className={`question-option ${isSelected} ${isCorrect} ${highlight}`}
-            data-iscorrect={props.isCorrect ? "correct" : "incorrect"}
+            className={`question-option ${isSelected} ${highlight}`}
+            // data-iscorrect={props.isCorrect ? "correct" : "incorrect"}
             onClick={props.clickEvent}
         >
             {
