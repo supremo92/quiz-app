@@ -9,8 +9,9 @@ function Setup() {
     const navigate = useNavigate()
     const grabbedQuizSettings = JSON.parse(localStorage.getItem("quizSettings") ?? '{}')
     const [quizCategories, setQuizCategories] = useState([{ id: 0, name: 'Loading...' }])
+
     const [triviaCategory, setTriviaCategory] = useState(grabbedQuizSettings.category ?? 9)
-    const [triviaDifficulty, setTriviaDifficulty] = useState(grabbedQuizSettings.difficulty ?? "easy")
+    const [triviaDifficulty, setTriviaDifficulty] = useState(grabbedQuizSettings.difficulty ?? "any")
     const [triviaType, setTriviaType] = useState(grabbedQuizSettings.type ?? "any")
     const [triviaAmount, setTriviaAmount] = useState(grabbedQuizSettings.amount ?? 10)
 
@@ -19,20 +20,28 @@ function Setup() {
 
         const fetchData = async () => {
             try {
-                const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}&category=${triviaCategory}&difficulty=${triviaDifficulty}&type=${triviaType}`)
+                //We need to build up the url to remove unncessary items:
+                const requestedDifficulty = (triviaDifficulty === "any" ? "" : `&difficulty=${triviaDifficulty}`)
+                const requestedType = (triviaType === "any" ? "" : `&type=${triviaType}`)
+                const res = await fetch(`https://opentdb.com/api.php?category=${triviaCategory}&amount=${triviaAmount}${requestedDifficulty}${requestedType}`)
+                // const res = await fetch(`https://opentdb.com/api.php?amount=${triviaAmount}&category=${triviaCategory}&difficulty=${triviaDifficulty}&type=${triviaType}`)
                 const dataFromApi = await res.json()
                 if (dataFromApi.response_code === 1) {
                     alert("There are not enough questions of the selected criteria.")
-                } else {
+                }
+                else if (dataFromApi.response_code === 2) {
+                    alert("Response code error: 2")
+                }
+                else {
                     const quizSettings = {
-                        amount: triviaAmount,
                         category: triviaCategory,
                         difficulty: triviaDifficulty,
-                        type: triviaType
+                        type: triviaType,
+                        amount: triviaAmount,
                     }
                     localStorage.setItem('quizSettings', JSON.stringify(quizSettings))
-                    localStorage.setItem('quizSettingsString', `amount=${triviaAmount}&category=${triviaCategory}&difficulty=${triviaDifficulty}&type=${triviaType}`)
-                    navigate("/Home")
+                    localStorage.setItem('quizSettingsString', `https://opentdb.com/api.php?category=${triviaCategory}&amount=${triviaAmount}${requestedDifficulty}${requestedType}`)
+                    navigate("/home")
                 }
             }
             catch (err) {
@@ -70,14 +79,21 @@ function Setup() {
                         <div className="form-options">
                             <div className="setup-form-section">
                                 <label>Select genre: </label>
-                                <select
-                                    name="trivia_category"
-                                    id="trivia_category"
-                                    className="form-control"
-                                    onChange={(event) => setTriviaCategory(parseInt(event.target.value))}
-                                >
-                                    {quizCategories.map((category, index) => <option key={index} value={category.id} selected={triviaCategory === category.id}>{category.name}</option>)}
-                                </select>
+                                {quizCategories.length > 0 ? (
+                                    <select
+                                        name="trivia_category"
+                                        id="trivia_category"
+                                        className="form-control"
+                                        onChange={(event) => setTriviaCategory(parseInt(event.target.value))}
+                                        defaultValue={triviaCategory} //Not working
+                                    >
+                                        {quizCategories.map((category, index) => <option key={index} value={category.id} selected={triviaCategory === category.id}>{category.name}</option>)}
+                                    </select>
+                                ) :
+                                    (
+                                        <p>Loading categories...</p>
+                                    )
+                                }
                             </div>
                             <div className="setup-form-section">
                                 <label htmlFor="trivia_difficulty">Select Difficulty: </label>
@@ -132,8 +148,6 @@ function Setup() {
 }
 
 export default Setup
+//Additional options://Timer option//Sounds//50-50 Lifeline
 
-//Additional options:
-//Timer option
-//Sounds
-//50-50 Lifeline
+//

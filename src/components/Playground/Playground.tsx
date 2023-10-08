@@ -17,8 +17,8 @@ interface Question {
 
 function Playground() {
     const navigate = useNavigate()
-    const quizSettings = localStorage.getItem("quizSettingsString") ?? "amount=10"
-    const URL = `https://opentdb.com/api.php?${quizSettings}`
+    const quizSettingsUrl = localStorage.getItem("quizSettingsString") ?? "amount=10"
+    const URL = `https://opentdb.com/api.php?${quizSettingsUrl}`
 
     const [questions, setQuestions] = useState<Question[]>([])
     const [responseCode, setResponseCode] = useState<number>()
@@ -30,6 +30,8 @@ function Playground() {
     const [areOptionsDisabled, setAreOptionsDisabled] = useState<boolean>(false)
     const [highlightNow, setHighlightNow] = useState<boolean>(false)
     const [currentQuestionText, setQuestionText] = useState<string>("...Loading")
+
+    const [score, setScore] = useState(0)
 
     const handleOptionSelection = (selectedOptionText: string) => {
         setSelectedOption(selectedOptionText)
@@ -47,13 +49,14 @@ function Playground() {
         setSelectedOption(null)
         setHighlightNow(false)
         setAreOptionsDisabled(false)
-        if (currentQuestion < 9) {
-            setCurrentQuestion(currentQuestion + 1)
+
+        if (currentQuestion < (questions.length - 1)) {
+            console.log(`${currentQuestion} of ${questions.length - 1}`)
+            setCurrentQuestion((prev) => prev + 1)
             setIsNextDisabled(true)
         } else {
             setIsNextDisabled(true)
-
-            alert("Add in ending screen here")
+            navigate("/results")
         }
     }
 
@@ -92,7 +95,7 @@ function Playground() {
         <div className="Playground">
             <Button label="Return to Setup" isDisabled={false} doClick={() => navigate('/')} />
             <div className="outer-container">
-                <div className="question-count">Question {currentQuestion + 1} of {questions.length}</div>
+                <div className="question-count"><div>Question {currentQuestion + 1} of {questions.length}</div><div>Score: {score}</div></div>
                 <div className="question-header">
                     <div className="question-header-question">{currentQuestionText}</div>
                 </div>
@@ -106,7 +109,7 @@ function Playground() {
                             label={decode(ans)}
                             clickEvent={() => handleOptionSelection(decode(ans))}
                             isSelected={selectedOption === decode(ans) ? true : false}
-                            isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false}
+                            isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false} //Causing error
                             highlightTime={highlightNow}
                         />
                     )}
