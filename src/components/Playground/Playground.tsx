@@ -39,10 +39,15 @@ function Playground() {
     }
 
     const handleSubmit = () => {
+
         setAreOptionsDisabled(true)
         setIsSubmitDisabled(true)
         setIsNextDisabled(false)
         setHighlightNow(true)
+
+        if (selectedOption === decode(questions[currentQuestion].correct_answer)) {
+            setScore((prev) => prev + 1)
+        }
     }
 
     const handleNext = () => {
@@ -95,7 +100,7 @@ function Playground() {
         <div className="Playground">
             <Button label="Return to Setup" isDisabled={false} doClick={() => navigate('/')} />
             <div className="outer-container">
-                <div className="question-count"><div>Question {currentQuestion + 1} of {questions.length}</div><div>Score: {score}</div></div>
+                <div className="question-count"><div>Question {currentQuestion + 1} of {questions.length}</div><div>Score: {score} / {questions.length}</div></div>
                 <div className="question-header">
                     <div className="question-header-question">{currentQuestionText}</div>
                 </div>
@@ -155,3 +160,49 @@ export default Playground
 
 
 //Bugs - Correct Tick covers text
+
+
+//Score System - I need to let yhe Playground component know if the user has clicked the correct option. Perhaps get the Option to send back info?
+
+
+
+
+// interface mongoId { }
+// interface quizSet {
+//     score: number
+//     total: number
+//     questions: Question[]
+// }
+
+// interface Scores {
+//     id: mongoId
+//     userId: mongoId
+//     2019: {
+//         jan: {
+//             1: {
+//                 daily: quizSet
+//                 freeplay?: quizSet[]
+//             },
+//             2: {
+//                 daily: quizSet
+//                 freeplay?: quizSet[]
+//             },
+//         }
+//     }
+// }
+
+// interface Users {
+//     id: mongoId //unique
+//     name: string
+// }
+
+// interface Dailies {
+//     2019: {
+//         jan: {
+//             1: Question[],
+//             2: Question[],
+//             3: Question[],
+//             : Question[],
+//         }
+//     }
+// }
