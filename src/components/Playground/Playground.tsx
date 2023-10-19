@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Button from "@components/Button" //short file path because of the index.tsx.
 import NoQuestionsScreen from "@components/NoQuestionsScreen"
 import Option from "@components/Option"
+import { useNavigate } from "react-router-dom"
 
 interface Question {
     category: string
@@ -14,17 +15,11 @@ interface Question {
     incorrect_answers: string[]
 }
 
-interface playgroundProps {
-    settingsUrl: string
-}
+function Playground() {
+    const navigate = useNavigate()
+    const quizSettingsUrl = localStorage.getItem("quizSettingsString") ?? "amount=10"
+    const URL = `https://opentdb.com/api.php?${quizSettingsUrl}`
 
-// const URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=medium&type=multiple'
-// const URL = 'https://opentdb.com/api.php?amount=10'
-//Options for URL: amount, category, difficulty, type, encode 
-//this url will have to be customised later for users to select their options. We'll leave it as above first.
-
-function Playground(props: playgroundProps) {
-    const URL = props.settingsUrl && `https://opentdb.com/api.php?${props.settingsUrl}`
     const [questions, setQuestions] = useState<Question[]>([])
     const [responseCode, setResponseCode] = useState<number>()
     const [shuffledOptions, setShuffledOptions] = useState<string[]>([])
@@ -36,20 +31,22 @@ function Playground(props: playgroundProps) {
     const [highlightNow, setHighlightNow] = useState<boolean>(false)
     const [currentQuestionText, setQuestionText] = useState<string>("...Loading")
 
+    const [score, setScore] = useState(0)
+
     const handleOptionSelection = (selectedOptionText: string) => {
         setSelectedOption(selectedOptionText)
         setIsSubmitDisabled(false)
     }
 
-    const handleSubmit = (submittedOptionText: string) => {
+    const handleSubmit = () => {
+
         setAreOptionsDisabled(true)
         setIsSubmitDisabled(true)
         setIsNextDisabled(false)
         setHighlightNow(true)
-        if (submittedOptionText === decode(questions[currentQuestion].correct_answer)) {
-            console.log("Correct")
-        } else {
-            console.log(`Incorrect: Correct answer is ${decode(questions[currentQuestion].correct_answer)}`)
+
+        if (selectedOption === decode(questions[currentQuestion].correct_answer)) {
+            setScore((prev) => prev + 1)
         }
     }
 
@@ -57,13 +54,14 @@ function Playground(props: playgroundProps) {
         setSelectedOption(null)
         setHighlightNow(false)
         setAreOptionsDisabled(false)
-        if (currentQuestion < 9) {
-            setCurrentQuestion(currentQuestion + 1)
+
+        if (currentQuestion < (questions.length - 1)) {
+            console.log(`${currentQuestion} of ${questions.length - 1}`)
+            setCurrentQuestion((prev) => prev + 1)
             setIsNextDisabled(true)
         } else {
             setIsNextDisabled(true)
-
-            alert("Add in ending screen here")
+            navigate("/results")
         }
     }
 
@@ -100,8 +98,9 @@ function Playground(props: playgroundProps) {
 
     return (
         <div className="Playground">
+            <Button label="Return to Setup" isDisabled={false} doClick={() => navigate('/')} />
             <div className="outer-container">
-                <div className="question-count">Question {currentQuestion + 1} of {questions.length}</div>
+                <div className="question-count"><div>Question {currentQuestion + 1} of {questions.length}</div><div>Score: {score} / {questions.length}</div></div>
                 <div className="question-header">
                     <div className="question-header-question">{currentQuestionText}</div>
                 </div>
@@ -115,7 +114,7 @@ function Playground(props: playgroundProps) {
                             label={decode(ans)}
                             clickEvent={() => handleOptionSelection(decode(ans))}
                             isSelected={selectedOption === decode(ans) ? true : false}
-                            isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false}
+                            isCorrect={decode(ans) === decode(questions[currentQuestion].correct_answer) ? true : false} //Causing error
                             highlightTime={highlightNow}
                         />
                     )}
@@ -125,7 +124,7 @@ function Playground(props: playgroundProps) {
                     <Button
                         label="Submit"
                         isDisabled={isSubmitDisabled}
-                        doClick={() => { handleSubmit(selectedOption ? selectedOption : "none") }}
+                        doClick={handleSubmit}
                     />
                     <Button
                         label="Next"
@@ -133,7 +132,6 @@ function Playground(props: playgroundProps) {
                         doClick={handleNext}
                     />
                 </div>
-
 
             </div>
         </div>
@@ -162,3 +160,49 @@ export default Playground
 
 
 //Bugs - Correct Tick covers text
+
+
+//Score System - I need to let yhe Playground component know if the user has clicked the correct option. Perhaps get the Option to send back info?
+
+
+
+
+// interface mongoId { }
+// interface quizSet {
+//     score: number
+//     total: number
+//     questions: Question[]
+// }
+
+// interface Scores {
+//     id: mongoId
+//     userId: mongoId
+//     2019: {
+//         jan: {
+//             1: {
+//                 daily: quizSet
+//                 freeplay?: quizSet[]
+//             },
+//             2: {
+//                 daily: quizSet
+//                 freeplay?: quizSet[]
+//             },
+//         }
+//     }
+// }
+
+// interface Users {
+//     id: mongoId //unique
+//     name: string
+// }
+
+// interface Dailies {
+//     2019: {
+//         jan: {
+//             1: Question[],
+//             2: Question[],
+//             3: Question[],
+//             : Question[],
+//         }
+//     }
+// }
